@@ -11,9 +11,9 @@ lakes <- map_data("lakes", wrap = c(-30,330))
 
 elevation <- get_elev_raster(map_data("world") %>% 
                                dplyr::select(long, lat) %>% 
-                               rbind(tibble(long = c(0,0), 
-                                            lat = c(90-1e2,1e2-90))), 
-                             z = 1, prj = "+proj=longlat +lon_0=150",
+                               filter(long > -180 & long <= 135 &
+                                        lat > -79 & lat <= 90), 
+                             z = 3, prj = "+proj=longlat +lon_0=150",
                              verbose = F)
 elev_df <- rasterToPoints(elevation) %>% 
   as_tibble() %>% 
@@ -29,10 +29,10 @@ EEZ_shp_df <- EEZ_shp_simple %>%
   broom::tidy()
 
 ggplot(world, aes(x = long, y = lat, group = group)) +
-  geom_raster(data = elev_df %>% filter(elevation <= 0), mapping = aes(fill = elevation, group = NULL)) +
-  geom_polygon(data = EEZ_shp_df, col = "lightblue2", fill = alpha("lightblue", 0.5), size = 0.25) +
+  geom_tile(data = elev_df %>% filter(elevation <= 0), mapping = aes(fill = elevation, group = NULL)) +
+  geom_polygon(data = EEZ_shp_df, col = "lightblue", fill = alpha("lightblue", 1/3), size = 0.25) +
   scale_fill_gradient(low = "lightblue4", high = "lightblue") +
-  geom_polygon(col = "honeydew", fill = "honeydew2", size = 0.25) +
+  geom_polygon(col = "honeydew2", fill = "honeydew3", size = 0.25) +
   geom_tile(data = elev_df %>% filter(elevation > 0), fill = "white", mapping = aes(alpha = elevation, group = NULL)) +
   geom_polygon(data = lakes, col = "honeydew", fill = "lightblue2", size = 0.25) +
   # geom_hline(yintercept = seq(-90,90,10), colour = "lightblue3", alpha = 0.25) +
