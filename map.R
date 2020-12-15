@@ -30,14 +30,14 @@ EEZ_shp_df <- EEZ_shp_simple %>%
 
 ggplot(world, aes(x = long, y = lat, group = group)) +
   geom_tile(data = elev_df %>% filter(elevation <= 0), mapping = aes(fill = elevation, group = NULL)) +
-  geom_polygon(data = EEZ_shp_df, col = "lightblue", fill = alpha("lightblue", 1/3), size = 0.25) +
+  geom_polygon(data = EEZ_shp_df, col = "lightblue1", fill = alpha("lightblue", 1/3), size = 0.25) +
   scale_fill_gradient(low = "lightblue4", high = "lightblue") +
   geom_polygon(col = "honeydew2", fill = "honeydew3", size = 0.25) +
   geom_tile(data = elev_df %>% filter(elevation > 0), fill = "white", mapping = aes(alpha = elevation, group = NULL)) +
-  geom_polygon(data = lakes, col = "honeydew", fill = "lightblue2", size = 0.25) +
+  geom_polygon(data = lakes, col = "honeydew2", fill = "lightblue", size = 0.25) +
   # geom_hline(yintercept = seq(-90,90,10), colour = "lightblue3", alpha = 0.25) +
   # geom_vline(xintercept = seq(-30,330,10), colour = "lightblue3", alpha = 0.25) +
-  coord_equal(xlim = c(330,-30), ylim = c(90,-90)) +
+  coord_equal(xlim = c(330,-30), ylim = c(85,-85)) +
   scale_x_reverse(expand = c(0,0)) +
   scale_y_reverse(expand = c(0,0)) +
   scale_alpha_continuous(range = c(0,1)) +
@@ -52,4 +52,4 @@ ggplot(world, aes(x = long, y = lat, group = group)) +
         axis.ticks = element_blank(),
         plot.margin=grid::unit(c(0,0,-1,-1), "mm"))
 
-ggsave("south_up.png", width = 20, height = 10)
+ggsave("south_up.png", width = 20, height = 20*(170/360))
