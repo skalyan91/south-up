@@ -7,6 +7,7 @@ library(raster)
 library(elevatr)
 
 world <- map_data("world", wrap = c(-30,330))
+world_borderless <- map_data("world", interior = F, wrap = c(-30,330))
 lakes <- map_data("lakes", wrap = c(-30,330))
 
 elevation <- get_elev_raster(map_data("world") %>% 
@@ -46,9 +47,13 @@ ggplot(shading_df %>%
                        mid = "gray50", midpoint = 0.5) +
   coord_fixed()
 
-EEZ_shp <- readOGR("World_EEZ_v11_20191118_LR/eez_v11_lowres.shp", stringsAsFactors = F)
-EEZ_shp_simple <- ms_simplify(EEZ_shp, keep = 0.01) # takes a while to run!
-save(EEZ_shp_simple, file = "EEZs_simple.RData")
+if (!file.exists("EEZs_simple.RData")){
+  EEZ_shp <- readOGR("World_EEZ_v11_20191118_LR/eez_v11_lowres.shp", stringsAsFactors = F)
+  EEZ_shp_simple <- ms_simplify(EEZ_shp, keep = 0.01) # takes a while to run!
+  save(EEZ_shp_simple, file = "EEZs_simple.RData")
+} else {
+  load("EEZs_simple.RData")
+}
 EEZ_shp_df <- EEZ_shp_simple %>% 
   bind(maptools::nowrapRecenter(EEZ_shp_simple)) %>% 
   aggregate(list(rep.int(EEZ_shp_simple$GEONAME,2)), FUN = identity) %>% 
@@ -96,3 +101,26 @@ ggplot(world, aes(x = long, y = lat, group = group)) +
         plot.margin=grid::unit(c(0,0,-1,-1), "mm"))
 
 ggsave("south_up_shaded.png", width = 20, height = 20*(170/360))
+
+ggplot(world_borderless, aes(x = long, y = lat, group = group)) +
+  geom_polygon(data = EEZ_shp_df, col = "black", fill = "lightgray", size = 0.25 + 0.2) +
+  geom_polygon(data = EEZ_shp_df, col = "lightgray", fill = "lightgray", size = 0 + 0.1) +
+  geom_polygon(col = "black", fill = "white", size = 0.25 + 0.2) +
+  geom_polygon(col = "white", fill = "white", size = 0 + 0.1) +
+  geom_polygon(data = lakes, col = "black", fill = "lightgray", size = 0.25 + 0.2) +
+  geom_polygon(data = lakes, col = "lightgray", fill = "lightgray", size = 0 + 0.1) +
+  coord_equal(xlim = c(330,-30), ylim = c(90,-90)) +
+  scale_x_reverse(expand = c(0,0)) +
+  scale_y_reverse(expand = c(0,0)) +
+  theme_minimal() +
+  theme(legend.position="none",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title=element_blank(),
+        axis.line = element_blank(),  
+        panel.background = element_rect(colour = NA, fill = "gray"),
+        axis.text = element_blank(),  
+        axis.ticks = element_blank(),
+        plot.margin=grid::unit(c(0,0,-1,-1), "mm"))
+
+ggsave("south_up_flat.png", width = 20, height = 10)
