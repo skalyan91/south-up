@@ -1,20 +1,17 @@
 library(tidyverse)
 library(ggnewscale)
 library(mapdata)
-library(rgdal)
+library(sf)
 library(rmapshaper)
 library(raster)
 library(elevatr)
 
 world <- map_data("world", wrap = c(-30,330))
-world_borderless <- map_data("world", interior = F, wrap = c(-30,330))
 lakes <- map_data("lakes", wrap = c(-30,330))
 
-elevation <- get_elev_raster(map_data("world") %>% 
-                               dplyr::select(long, lat) %>% 
-                               filter(long > -180 & long <= 135 &
-                                        lat > -79 & lat <= 90), 
-                             z = 3, prj = "+proj=longlat +lon_0=150",
+elevation <- get_elev_raster(tibble(long = c(-180, 180, -180, 180),
+                                    lat = c(-85, -85, 85, 85)),
+                             z = 3, prj = "+proj=longlat",
                              verbose = F)
 slope <- terrain(elevation, opt = "slope")
 aspect <- terrain(elevation, opt = "aspect")
@@ -22,19 +19,31 @@ hill <- hillShade(slope, aspect, angle = 45, direction = -30)
 elev_df <- rasterToPoints(elevation) %>% 
   as_tibble() %>% 
   `colnames<-`(c("long", "lat", "elevation")) %>% 
-  mutate(long = long + 150)
+  mutate(long = if_else(long < -30, long + 360, long))
 slope_df <- rasterToPoints(slope) %>% 
   as_tibble() %>% 
   `colnames<-`(c("long", "lat", "slope")) %>% 
-  mutate(long = long + 150,
+  mutate(long = if_else(long < -30, long + 360, long),
          slope = if_else(slope > 0.4, 0, slope))
 hill_df <- rasterToPoints(hill) %>% 
   as_tibble() %>% 
   `colnames<-`(c("long", "lat", "shade")) %>% 
-  mutate(long = long + 150,
+  mutate(long = if_else(long < -30, long + 360, long),
          shade = if_else(shade < 0.5, sqrt(0.5), shade))
 shading_df <- full_join(slope_df, hill_df) %>% 
-  full_join(elev_df)
+  left_join(elev_df)
+shading_df_edge <- shading_df %>% 
+  filter(long == min(long[long > 180]))
+edge_long <- min(shading_df_edge$long)
+spacing <- shading_df$long %>% 
+  unique() %>% sort() %>% diff() %>% 
+  table() %>% which.max() %>% names() %>% 
+  as.numeric()
+shading_df <- shading_df %>% 
+  full_join(shading_df_edge %>% 
+              mutate(long = edge_long - spacing)) %>% 
+  full_join(shading_df_edge %>% 
+              mutate(long = edge_long - 2 * spacing))
 
 ggplot(shading_df %>% 
          filter(elevation < 0 & lat <= 5 & long >= 300 & long <= 329), aes(x = long, y = lat)) +
@@ -102,7 +111,7 @@ ggplot(world, aes(x = long, y = lat, group = group)) +
 
 ggsave("south_up_shaded.png", width = 20, height = 20*(170/360))
 
-ggplot(world_borderless, aes(x = long, y = lat, group = group)) +
+ggplot(world, aes(x = long, y = lat, group = group)) +
   geom_polygon(data = EEZ_shp_df, col = "black", fill = "lightgray", size = 0.25 + 0.2) +
   geom_polygon(data = EEZ_shp_df, col = "lightgray", fill = "lightgray", size = 0 + 0.1) +
   geom_polygon(col = "black", fill = "white", size = 0.25 + 0.2) +
