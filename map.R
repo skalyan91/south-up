@@ -143,6 +143,9 @@ ggplot(world, aes(x = long, y = lat, group = group)) +
         panel.background = element_rect(colour = NA, fill = "gray"),
         axis.text = element_blank(),  
         axis.ticks = element_blank(),
-        plot.margin=grid::unit(c(0,0,-1,-1), "mm"))
+        plot.margin=grid::unit(c(0,0,-1,-1), "mm")) +  
+  annotation_custom(grid::grid.text("Siva Kalyan, 2023\n https://github.com/skalyan91/south-up", x=0.9,  y=0.95, gp=grid::gpar(col = "darkgrey", fontsize=10, fontface="italic"))) 
+
+
 
 ggsave("south_up_flat.png", width = 20, height = 10)
