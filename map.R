@@ -111,11 +111,24 @@ ggplot(world, aes(x = long, y = lat, group = group)) +
 
 ggsave("south_up_shaded.png", width = 20, height = 20*(170/360))
 
+show_borders <- "no"
+if(show_borders == "no"){
+  land_borders_col <- "black"
+  sea_borders_col <- "black"
+  
+}else{
+  land_borders_col <- "lightgray"
+  sea_borders_col <- "white"
+  
+  
+}
+
+
 ggplot(world, aes(x = long, y = lat, group = group)) +
   geom_polygon(data = EEZ_shp_df, col = "black", fill = "lightgray", size = 0.25 + 0.2) +
-  geom_polygon(data = EEZ_shp_df, col = "lightgray", fill = "lightgray", size = 0 + 0.1) +
+  geom_polygon(data = EEZ_shp_df, col = land_borders_col, fill = "lightgray", size = 0 + 0.1) +
   geom_polygon(col = "black", fill = "white", size = 0.25 + 0.2) +
-  geom_polygon(col = "white", fill = "white", size = 0 + 0.1) +
+  geom_polygon(col = sea_borders_col, fill = "white", size = 0 + 0.1) +
   geom_polygon(data = lakes, col = "black", fill = "lightgray", size = 0.25 + 0.2) +
   geom_polygon(data = lakes, col = "lightgray", fill = "lightgray", size = 0 + 0.1) +
   coord_equal(xlim = c(330,-30), ylim = c(90,-90)) +
