@@ -1,10 +1,14 @@
-library(tidyverse)
-library(ggnewscale)
-library(mapdata)
-library(sf)
-library(rmapshaper)
-library(raster)
-library(elevatr)
+library(groundhog)
+groundhog_pkgs <- c("elevatr", 
+                    "ggnewscale", 
+                    "mapdata", 
+                    "maptools", 
+                    "raster", 
+                    "rgeos", 
+                    "rmapshaper", 
+                    "sf", 
+                    "tidyverse")
+groundhog.library(groundhog_pkgs, "2023-07-17")
 
 world <- map_data("world", wrap = c(-30,330))
 lakes <- map_data("lakes", wrap = c(-30,330))
@@ -64,7 +68,7 @@ if (!file.exists("EEZs_simple.RData")){
   load("EEZs_simple.RData")
 }
 EEZ_shp_df <- EEZ_shp_simple %>% 
-  bind(maptools::nowrapRecenter(EEZ_shp_simple)) %>% 
+  bind(nowrapRecenter(EEZ_shp_simple)) %>% 
   aggregate(list(rep.int(EEZ_shp_simple$GEONAME,2)), FUN = identity) %>% 
   broom::tidy()
 
@@ -121,17 +125,17 @@ if (show_borders == "no"){
 
 ggplot(world, aes(x = long, y = lat, group = group)) +
   geom_polygon(data = EEZ_shp_df, col = "black", fill = "lightgray", 
-               size = 0.25 + 2 * padding) +
+               linewidth = 0.25 + 2 * padding) +
   geom_polygon(data = EEZ_shp_df, col = "lightgray", fill = "lightgray", 
-               size = 0 + padding) +
+               linewidth = 0 + padding) +
   geom_polygon(col = "black", fill = "white", 
-               size = 0.25 + 2 * padding) +
+               linewidth = 0.25 + 2 * padding) +
   geom_polygon(col = "white", fill = "white", 
-               size = 0 + padding) +
+               linewidth = 0 + padding) +
   geom_polygon(data = lakes, col = "black", fill = "lightgray", 
-               size = 0.25 + 2 * padding) +
+               linewidth = 0.25 + 2 * padding) +
   geom_polygon(data = lakes, col = "lightgray", fill = "lightgray", 
-               size = 0 + padding) +
+               linewidth = 0 + padding) +
   coord_equal(xlim = c(330,-30), ylim = c(90,-90)) +
   scale_x_reverse(expand = c(0,0)) +
   scale_y_reverse(expand = c(0,0)) +
