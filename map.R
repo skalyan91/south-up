@@ -133,7 +133,7 @@ p <- ggplot(world, aes(x = long, y = lat, group = group)) +
         plot.margin=grid::unit(c(0,0,-1,-1), "mm"))
 
 
-save(p, file = "south_up_woldmap_shaded.RData")
+save(p, file = "south_up_worldmap_shaded.RData")
 
 ggsave(plot = p, "south_up_shaded.png", width = 20, height = 20*(170/360))
 
@@ -178,8 +178,8 @@ coord_equal(xlim = c(-30, 330), ylim = c(-90,90)) +
   scale_x_continuous(expand = c(0,0)) +
   scale_y_continuous(expand = c(0,0)) 
 
-save(p_south_down, file = "south_down_woldmap_bw_flat.RData")
+save(p_south_down, file = "south_down_worldmap_bw_flat.RData")
 
-load("south_down_woldmap_bw_flat.RData")
+load("south_down_worldmap_bw_flat.RData")
 
 
