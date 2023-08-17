@@ -134,19 +134,13 @@ save(p, file = "south_up_woldmap_shaded.RData")
 
 ggsave(plot = p, "south_up_shaded.png", width = 20, height = 20*(170/360))
 
-show_borders <- "yes"
-
-if (show_borders == "no"){
-  padding <- 0.1
-} else {
-  padding <- 0
-}
+padding  <- 0.2
 
 p <- ggplot(world, aes(x = long, y = lat, group = group)) +
-  geom_polygon(data = EEZ_shp_df, col = "black", fill = "lightgray", 
-               linewidth = 0.25 + 2 * padding) +
-  geom_polygon(data = EEZ_shp_df, col = "lightgray", fill = "lightgray", 
-               linewidth = 0 + padding) +
+  geom_polygon(data = EEZ_shp_df, col = "#949494", fill = "lightgray", 
+               linewidth = 0.25 +  padding) +
+#  geom_polygon(data = EEZ_shp_df, col = "darkgray", fill = "lightgray", 
+#               linewidth = 0 + padding) +
   geom_polygon(col = "black", fill = "white", 
                linewidth = 0.25 + 2 * padding) +
   geom_polygon(col = "white", fill = "white", 
@@ -170,6 +164,9 @@ p <- ggplot(world, aes(x = long, y = lat, group = group)) +
         plot.margin=grid::unit(c(0,0,-1,-1), "mm")) +  
   annotation_custom(grid::grid.text("Siva Kalyan, 2023\n https://github.com/skalyan91/south-up", x=0.9,  y=0.95, gp=grid::gpar(col = "darkgrey", fontsize=10, fontface="italic"))) 
 
-save(p, file = "south_up_woldmap_bw_flat.RData")
+p
+
 
 ggsave(plot = p, "south_up_flat.png", width = 20, height = 10)
+
+save(p, file = "south_up_woldmap_bw_flat.RData")
