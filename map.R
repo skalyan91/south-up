@@ -88,6 +88,9 @@ EEZ_shp_df <- EEZ_shp_simple %>%
   aggregate(list(rep.int(EEZ_shp_simple$GEONAME,2)), FUN = identity) %>% 
   broom::tidy()
 
+
+#shaded for elevation
+
 p <- ggplot(world, aes(x = long, y = lat, group = group)) +
   geom_raster(data = shading_df %>% 
                 filter(elevation < 0), 
@@ -134,6 +137,8 @@ save(p, file = "south_up_woldmap_shaded.RData")
 
 ggsave(plot = p, "south_up_shaded.png", width = 20, height = 20*(170/360))
 
+
+#FLAT
 padding  <- 0.2
 
 p <- ggplot(world, aes(x = long, y = lat, group = group)) +
@@ -148,11 +153,7 @@ p <- ggplot(world, aes(x = long, y = lat, group = group)) +
   geom_polygon(data = lakes, col = "black", fill = "lightgray", 
                linewidth = 0.25 + 2 * padding) +
   geom_polygon(data = lakes, col = "lightgray", fill = "lightgray", 
-               linewidth = 0 + padding) +
-  coord_equal(xlim = c(330,-30), ylim = c(90,-90)) +
-  scale_x_reverse(expand = c(0,0)) +
-  scale_y_reverse(expand = c(0,0)) +
-  theme_minimal() +
+               linewidth = 0 + padding) +  theme_minimal() +
   theme(legend.position="none",
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -161,9 +162,25 @@ p <- ggplot(world, aes(x = long, y = lat, group = group)) +
         panel.background = element_rect(colour = NA, fill = "gray"),
         axis.text = element_blank(),  
         axis.ticks = element_blank(),
-        plot.margin=grid::unit(c(0,0,-1,-1), "mm")) +  
-  annotation_custom(grid::grid.text("Siva Kalyan, 2023\n https://github.com/skalyan91/south-up", x=0.9,  y=0.95, gp=grid::gpar(col = "darkgrey", fontsize=10, fontface="italic"))) 
+        plot.margin=grid::unit(c(0,0,-1,-1), "mm")
+        ) 
 
-ggsave(plot = p, "south_up_flat.png", width = 20, height = 10)
+p_south_up <- p + 
+  coord_equal(xlim = c(330, -30), ylim = c(90, -90)) +
+  scale_x_reverse(expand = c(0,0)) +
+  scale_y_reverse(expand = c(0,0)) +
+  annotation_custom(grid::grid.text("Siva Kalyan, 2023\n https://github.com/skalyan91/south-up", x=0.9,  y=0.95, gp=grid::gpar(col = "darkgrey", fontsize=10, fontface="italic")))
 
-save(p, file = "south_up_woldmap_bw_flat.RData")
+  ggsave(plot = p_south_up, "south_up_flat.png", width = 20, height = 10)
+
+p_south_down <- p + 
+coord_equal(xlim = c(-30, 330), ylim = c(-90,90)) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_y_continuous(expand = c(0,0)) +
+  annotation_custom(grid::grid.text("Siva Kalyan, 2023\n https://github.com/skalyan91/south-up", x=0.15,  y=0.05, gp=grid::gpar(col = "darkgrey", fontsize=10, fontface="italic"))) 
+
+save(p_south_down, file = "south_down_woldmap_bw_flat.RData")
+
+load("south_down_woldmap_bw_flat.RData")
+
+
