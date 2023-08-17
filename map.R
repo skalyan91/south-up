@@ -88,7 +88,7 @@ EEZ_shp_df <- EEZ_shp_simple %>%
   aggregate(list(rep.int(EEZ_shp_simple$GEONAME,2)), FUN = identity) %>% 
   broom::tidy()
 
-ggplot(world, aes(x = long, y = lat, group = group)) +
+p <- ggplot(world, aes(x = long, y = lat, group = group)) +
   geom_raster(data = shading_df %>% 
                 filter(elevation < 0), 
               mapping = aes(alpha = desc(elevation), group = NULL), fill = "lightblue4") +
@@ -129,9 +129,12 @@ ggplot(world, aes(x = long, y = lat, group = group)) +
         axis.ticks = element_blank(),
         plot.margin=grid::unit(c(0,0,-1,-1), "mm"))
 
-ggsave("south_up_shaded.png", width = 20, height = 20*(170/360))
 
-show_borders <- "no"
+save(p, file = "south_up_woldmap_shaded.RData")
+
+ggsave(plot = p, "south_up_shaded.png", width = 20, height = 20*(170/360))
+
+show_borders <- "yes"
 
 if (show_borders == "no"){
   padding <- 0.1
@@ -139,7 +142,7 @@ if (show_borders == "no"){
   padding <- 0
 }
 
-ggplot(world, aes(x = long, y = lat, group = group)) +
+p <- ggplot(world, aes(x = long, y = lat, group = group)) +
   geom_polygon(data = EEZ_shp_df, col = "black", fill = "lightgray", 
                linewidth = 0.25 + 2 * padding) +
   geom_polygon(data = EEZ_shp_df, col = "lightgray", fill = "lightgray", 
@@ -167,4 +170,6 @@ ggplot(world, aes(x = long, y = lat, group = group)) +
         plot.margin=grid::unit(c(0,0,-1,-1), "mm")) +  
   annotation_custom(grid::grid.text("Siva Kalyan, 2023\n https://github.com/skalyan91/south-up", x=0.9,  y=0.95, gp=grid::gpar(col = "darkgrey", fontsize=10, fontface="italic"))) 
 
-ggsave("south_up_flat.png", width = 20, height = 10)
+save(p, file = "south_up_woldmap_bw_flat.RData")
+
+ggsave(plot = p, "south_up_flat.png", width = 20, height = 10)
