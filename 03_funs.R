@@ -7,8 +7,8 @@ colour_lakes = "lightgray"
 
 
 plot_eez_map_kalyan <- function(elevation_shading = F, 
-                                xlim = NULL, 
-                                ylim = NULL, 
+                                xlim = c(-30, 330),
+                                ylim = c(-90, 90),
                                 south = "up", 
                                 colour_land = "white", 
                                 colour_water = "gray",
@@ -90,57 +90,28 @@ if(elevation_shading == F){
             plot.margin=grid::unit(c(0,0,-1,-1), "mm")
       ) 
     
-    
   }
-  if(south == "up" & is.null(xlim) &
-     is.null(ylim)){
-    p <- p  +
-      xlim(c(330,-30)) +
-      ylim(c(85,-85))
-  }
-  
-  if(south != "up" & is.null(xlim) &
-     is.null(ylim)){
-    p <- p  +
-      xlim(c(-30,330)) +
-      ylim(c(-85,85))
-  }
-  
-  
-#ZOOMING IN
-  if(is.null(xlim) & !is.null(ylim)|
-    !is.null(xlim) & is.null(ylim)){
-    
-    warning("Please specify both xlim and ylm.\n")
-    stop()
-  }
-  
-  
-if(!is.null(xlim) & !is.null(ylim)){
-  
-  
   if(south == "up"){
-    ylim = rev(ylim)
-    xlim = rev(xlim)
+    p <- p  +
+      coord_equal(xlim = rev(xlim), ylim = rev(ylim)) +
+      scale_x_continuous(expand = c(0,0)) +
+      scale_y_continuous(expand = c(0,0)) 
+    
+  }else{
+    p <- p  +
+      coord_equal(xlim = xlim, ylim = ylim) +
+      scale_x_continuous(expand = c(0,0)) +
+      scale_y_continuous(expand = c(0,0)) 
+    
   }
   
   
-#  xlim = c(78, 255)
-  #    ylim = c(-56,27)
-  p <- p +
-    coord_equal(xlim = xlim, ylim = ylim) +
-    scale_x_continuous(expand = c(0,0)) +
-    scale_y_continuous(expand = c(0,0)) 
-    }
-
 p
   } 
   
   
   
   
-  
-plot_eez_map_kalyan(elevation_shading = F)
 
 
 
