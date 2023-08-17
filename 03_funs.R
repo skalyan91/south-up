@@ -1,9 +1,9 @@
-colour_land = "white" 
-colour_water = "gray"
-colour_water_EEZ = "lightgray" 
-colour_outline_land = "black" 
-colour_outline_eez = "#949494"
-colour_lakes = "lightgray"
+#colour_land = "white" 
+#colour_water = "gray"
+#colour_water_EEZ = "lightgray" 
+#colour_outline_land = "black" 
+#colour_outline_eez = "#949494"
+#colour_lakes = "lightgray"
 
 
 plot_eez_map_kalyan <- function(elevation_shading = F, 
@@ -14,6 +14,7 @@ plot_eez_map_kalyan <- function(elevation_shading = F,
                                 colour_water = "gray",
                                 colour_water_EEZ = "lightgray", 
                                 colour_outline_land = "black", 
+                                colour_border_land = "darkgray",
                                 colour_outline_eez = "#949494",
                                 colour_lakes = "lightgray"
 ){
@@ -71,11 +72,11 @@ if(elevation_shading == F){
                    color = colour_outline_eez, 
                    fill = colour_water_EEZ, 
                    linewidth = 0.25 +  padding) +
-      geom_polygon(col = colour_outline_land, fill = colour_land, 
+      geom_polygon(col = colour_border_land, fill = colour_land, 
                    linewidth = 0.25 + 2 * padding) +
-      geom_polygon(col = colour_land, fill = colour_land, 
+      geom_polygon(col = colour_border_land, fill = colour_land, 
                    linewidth = 0 + padding) +
-      geom_polygon(data = needed_data$lakes, col = "black", fill = colour_lakes, 
+      geom_polygon(data = needed_data$lakes, col = colour_border_land, fill = colour_lakes, 
                    linewidth = 0.25 + 2 * padding) +
       geom_polygon(data = needed_data$lakes, col = colour_lakes, fill = colour_lakes, 
                    linewidth = 0 + padding) +  theme_minimal() +
