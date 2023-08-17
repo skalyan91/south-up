@@ -1,3 +1,5 @@
+#installing packages, using groundhogr so that it's particular package versions.
+
 library(groundhog)
 
 date <- "2023-07-17"
@@ -22,6 +24,8 @@ groundhog_pkgs <- c("elevatr",
 
 groundhog.library(groundhog_pkgs, "2023-07-17")
 
+
+#WORLMAP DATA
 world <- map_data("world", wrap = c(-30,330))
 lakes <- map_data("lakes", wrap = c(-30,330))
 
