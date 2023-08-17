@@ -171,13 +171,12 @@ p_south_up <- p +
   scale_y_reverse(expand = c(0,0)) +
   annotation_custom(grid::grid.text("Siva Kalyan, 2023\n https://github.com/skalyan91/south-up", x=0.9,  y=0.95, gp=grid::gpar(col = "darkgrey", fontsize=10, fontface="italic")))
 
-  ggsave(plot = p_south_up, "south_up_flat.png", width = 20, height = 10)
+ggsave(plot = p_south_up, "south_up_flat.png", width = 20, height = 10)
 
 p_south_down <- p + 
 coord_equal(xlim = c(-30, 330), ylim = c(-90,90)) +
   scale_x_continuous(expand = c(0,0)) +
-  scale_y_continuous(expand = c(0,0)) +
-  annotation_custom(grid::grid.text("Siva Kalyan, 2023\n https://github.com/skalyan91/south-up", x=0.15,  y=0.05, gp=grid::gpar(col = "darkgrey", fontsize=10, fontface="italic"))) 
+  scale_y_continuous(expand = c(0,0)) 
 
 save(p_south_down, file = "south_down_woldmap_bw_flat.RData")
 
