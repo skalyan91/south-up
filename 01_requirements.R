@@ -19,6 +19,7 @@ groundhog_pkgs <- c("elevatr",
                     "rgeos", 
                     "ggnewscale",
                     "rmapshaper", 
+                    "qs",
                     "sf", 
                     "tidyverse")
 
