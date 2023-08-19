@@ -56,10 +56,34 @@ EEZ_shp_df <- EEZ_shp_simple %>%
   aggregate(list(rep.int(EEZ_shp_simple$GEONAME,2)), FUN = identity) %>% 
   broom::tidy()
 
-needed_data <- list(shading_df = shading_df, 
-                    EEZ_shp_df = EEZ_shp_df)
+#saving the objects for later use. Using qs to compress and splitting up so each file is less than 100 MB
 
-qs::qsave(needed_data, file = "south_up_fun_needed_data.qs")
+shading_df_greater <- shading_df %>%
+  filter(elevation > 0) 
 
-#eevation shade slope
-#long lat group
+nrow <- nrow(shading_df_greater)
+half <- floor(nrow*0.5)
+
+shading_df_greater %>% 
+  .[1:half,] %>% 
+  qs::qsave(file = "south_up_shading_df_greater_pt1.qs")
+
+shading_df_greater %>% 
+  .[half:nrow,] %>% 
+  qs::qsave(file = "south_up_shading_df_greater_pt2.qs")
+
+shading_df_less <- shading_df %>%
+  filter(elevation < 0) 
+
+nrow <- nrow(shading_df_less)
+half <- floor(nrow*0.5)
+
+shading_df_less %>% 
+.[1:half,] %>% 
+  qs::qsave(file = "south_up_shading_df_less_pt1.qs")
+  
+shading_df_less %>% 
+  .[half:nrow,] %>% 
+  qs::qsave(file = "south_up_shading_df_less_pt2.qs")
+
+qs::qsave(EEZ_shp_df, file = "south_up_EEZ_shp_df.qs")
