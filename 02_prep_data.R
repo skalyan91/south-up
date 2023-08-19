@@ -56,9 +56,10 @@ EEZ_shp_df <- EEZ_shp_simple %>%
   aggregate(list(rep.int(EEZ_shp_simple$GEONAME,2)), FUN = identity) %>% 
   broom::tidy()
 
-needed_data <- list(world = world, 
-                    lakes = lakes,
-                    shading_df = shading_df, 
+needed_data <- list(shading_df = shading_df, 
                     EEZ_shp_df = EEZ_shp_df)
 
-save(needed_data, file = "south_up_fun_needed_data.RData")
+qs::qsave(needed_data, file = "south_up_fun_needed_data.qs")
+
+#eevation shade slope
+#long lat group
