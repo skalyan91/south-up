@@ -34,9 +34,21 @@ plot_eez_map_kalyan <- function(elevation_shading = F,
     
     #loading data that is only necessary for elevation shaing plot
     shading_df <- qs::qread(file = "south_up_shading_df_greater_pt1.qs")  %>% 
-      full_join(qs::qread(file = "south_up_shading_df_greater_pt2.qs"), by = join_by(long, lat, slope, shade, elevation)) %>%   
-      full_join(qs::qread(file = "south_up_shading_df_less_pt1.qs"), by = join_by(long, lat, slope, shade, elevation)) %>% 
-      full_join(qs::qread(file = "south_up_shading_df_less_pt2.qs"), by = join_by(long, lat, slope, shade, elevation))
+      full_join(qs::qread(file = "south_up_shading_df_greater_pt2.qs"), 
+                by = join_by(long, lat, slope, shade_se, shade_nw, elevation)) %>%   
+      full_join(qs::qread(file = "south_up_shading_df_less_pt1.qs"), 
+                by = join_by(long, lat, slope, shade_se, shade_nw, elevation)) %>% 
+      full_join(qs::qread(file = "south_up_shading_df_less_pt2.qs"), 
+                by = join_by(long, lat, slope, shade_se, shade_nw, elevation))
+    
+    #make sure shading is the right way round
+    if(south == "up"){
+      shading_df <- shading_df %>% 
+        rename(shade = shade_se)
+    } else {
+      shading_df <- shading_df %>% 
+        rename(shade = shade_nw)
+    }
     
     #plot
     

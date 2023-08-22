@@ -10,7 +10,8 @@ elevation <- get_elev_raster(tibble(long = c(-180, 180, -180, 180),
                              verbose = F)
 slope <- terrain(elevation, opt = "slope")
 aspect <- terrain(elevation, opt = "aspect")
-hill <- hillShade(slope, aspect, angle = 45, direction = -30)
+hill_se <- hillShade(slope, aspect, angle = 45, direction = -30)
+hill_nw <- hillShade(slope, aspect, angle = 45, direction = 150)
 elev_df <- rasterToPoints(elevation) %>% 
   as_tibble() %>% 
   `colnames<-`(c("long", "lat", "elevation")) %>% 
@@ -20,13 +21,19 @@ slope_df <- rasterToPoints(slope) %>%
   `colnames<-`(c("long", "lat", "slope")) %>% 
   mutate(long = if_else(long < -30, long + 360, long),
          slope = if_else(slope > 0.4, 0, slope))
-hill_df <- rasterToPoints(hill) %>% 
+hill_se_df <- rasterToPoints(hill_se) %>% 
   as_tibble() %>% 
-  `colnames<-`(c("long", "lat", "shade")) %>% 
+  `colnames<-`(c("long", "lat", "shade_se")) %>% 
   mutate(long = if_else(long < -30, long + 360, long),
-         shade = if_else(shade < 0.5, sqrt(0.5), shade))
+         shade_se = if_else(shade_se < 0.5, sqrt(0.5), shade_se))
+hill_nw_df <- rasterToPoints(hill_nw) %>% 
+  as_tibble() %>% 
+  `colnames<-`(c("long", "lat", "shade_nw")) %>% 
+  mutate(long = if_else(long < -30, long + 360, long),
+         shade_nw = if_else(shade_nw < 0.5, sqrt(0.5), shade_nw))
 
-shading_df <- full_join(slope_df, hill_df, by = c("long", "lat")) %>% 
+shading_df <- full_join(slope_df, hill_se_df, by = c("long", "lat")) %>% 
+  full_join(hill_nw_df, by = c("long", "lat")) %>% 
   left_join(elev_df, by = c("long", "lat"))
 
 shading_df_edge <- shading_df %>% 
@@ -39,9 +46,9 @@ spacing <- shading_df$long %>%
 
 shading_df <- shading_df %>% 
   full_join(shading_df_edge %>% 
-              mutate(long = edge_long - spacing), by = join_by(long, lat, slope, shade, elevation)) %>% 
+              mutate(long = edge_long - spacing), by = join_by(long, lat, slope, shade_se, shade_nw, elevation)) %>% 
   full_join(shading_df_edge %>% 
-              mutate(long = edge_long - 2 * spacing), by = join_by(long, lat, slope, shade, elevation))
+              mutate(long = edge_long - 2 * spacing), by = join_by(long, lat, slope, shade_se, shade_nw, elevation))
 
 if (!file.exists("EEZs_simple.RData")){
   EEZ_shp <- readOGR("World_EEZ_v11_20191118_LR/eez_v11_lowres.shp", stringsAsFactors = F)
@@ -87,3 +94,4 @@ shading_df_less %>%
   qs::qsave(file = "south_up_shading_df_less_pt2.qs")
 
 qs::qsave(EEZ_shp_df, file = "south_up_EEZ_shp_df.qs")
+
